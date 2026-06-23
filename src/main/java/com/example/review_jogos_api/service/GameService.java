@@ -28,9 +28,9 @@ public class GameService {
         return rawgClient.buscarJogos(termo, pagina, tamanho);
     }
 
-    public Long navegarJogosPorNome(String nome) {
+    public String navegarJogosPorNome(String nome) {
         if (nome == null || nome.isBlank()) {
-            return 0L;
+            return "";
         }
         return rawgClient.buscarJogos(nome);
     }
@@ -40,5 +40,13 @@ public class GameService {
             throw new RuntimeException("nome do jogo tem de ser expecificado!");
         }
         return rawgClient.pegarNome(nomeDeBusca);
+    }
+
+    public String navegarJogoPeloId(String id) {
+        if(id.equals("")) {
+            throw new RuntimeException("o id do jogo não pode ser um campo vazio!");
+        }
+
+        return rawgClient.getGameById(id);
     }
 }

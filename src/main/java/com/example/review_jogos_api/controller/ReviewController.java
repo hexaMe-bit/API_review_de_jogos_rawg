@@ -24,7 +24,7 @@ public class ReviewController {
 
     @PostMapping("/reviews")
     public ResponseEntity<ReviewResponseDTO> createReviews(@RequestBody ReviewRequestDTO reviews) {
-        Long idJogo = gameService.navegarJogosPorNome(reviews.nomeJogo());
+        String idJogo = gameService.navegarJogosPorNome(reviews.nomeJogo());
 
         ReviewResponseDTO saved = reviewService.createReview(reviews, idJogo );
 
@@ -32,18 +32,18 @@ public class ReviewController {
     }
 
     @GetMapping("/reviews")
-    public List<ReviewResponseDTO> getAll() {
+    public List<ReviewRequestDTO> getAll() {
         return  reviewService.getAllReviews();
     }
 
     @GetMapping("/reviews/{id}")
-    public ReviewResponseDTO getById(@PathVariable UUID id) {
+    public ReviewRequestDTO getById(@PathVariable UUID id) {
         return reviewService.getReviewById(id);
     }
 
     @PatchMapping("/reviews/{id}")
-    public ResponseEntity<ReviewResponseDTO> updateById(@PathVariable UUID id, @RequestBody ReviewResponseDTO dto) {
-        ReviewResponseDTO updatedReview = reviewService.updateReview(id, dto);
+    public ResponseEntity<ReviewRequestDTO> updateById(@PathVariable UUID id, @RequestBody ReviewRequestDTO dto) {
+        ReviewRequestDTO updatedReview = reviewService.updateReview(id, dto);
 
         return ResponseEntity.status(HttpStatus.OK).body(updatedReview);
 

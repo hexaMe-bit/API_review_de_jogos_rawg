@@ -40,7 +40,7 @@ public class RawgClient {
 
     }
 
-    public Long buscarJogos(String nome) {
+    public String buscarJogos(String nome) {
         Map<String, Object> response = restClient.get()
                 .uri(uriBuilder -> uriBuilder.path("/games")
                         .queryParam("Key", apiKey)
@@ -49,13 +49,15 @@ public class RawgClient {
                 .retrieve()
                 .body(Map.class);
 
-        List<Map<String, Object>> results = (List<Map<String, Object>>) response.get("results");
+        if (response != null && response.containsKey("results")) {
+            List<Map<String, Object>> results = (List<Map<String, Object>>) response.get("results");
 
-        if (results != null && !results.isEmpty()) {
-            return (Long) results.get(0).get("id");
+            if (results != null && !results.isEmpty()) {
+                return (String) results.get(0).get("id");
+            }
         }
 
-        return null;
+        throw new RuntimeException("não foi possivel encontrar o jogo");
     }
 
     public String pegarNome(String nomeDoJogo) {
@@ -77,8 +79,28 @@ public class RawgClient {
             }
         }
 
-        return null;
+        return "";
 
     }
 
+    public String getGameById(String id) {
+        Map<String, Object> response = restClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/games/{id}")
+                        .queryParam("key", apiKey)
+                        .build(id))
+                .retrieve()
+                .body(Map.class);
+
+        if (response != null || response.containsKey("results")) {
+            List<Map<String, Object>> results = (List<Map<String, Object>>) response.get("results");
+
+            if (!results.isEmpty()) {
+                Map<String, Object> primeiroJogo = results.get(0);
+                return (String) primeiroJogo.get("name");
+            }
+        }
+
+        return "";
+
+    }
 }

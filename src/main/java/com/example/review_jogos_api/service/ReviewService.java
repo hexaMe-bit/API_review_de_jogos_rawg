@@ -23,7 +23,7 @@ public class ReviewService {
 
     }
 
-    public ReviewResponseDTO createReview(ReviewRequestDTO review, Long id) {
+    public ReviewResponseDTO createReview(ReviewRequestDTO review, String id) {
 
         ReviewEntity novaReview = new ReviewEntity();
         novaReview.setTituloReview(review.tituloReview());
@@ -40,20 +40,20 @@ public class ReviewService {
 
     }
 
-    public ReviewResponseDTO getReviewById(UUID id) {
+    public ReviewRequestDTO getReviewById(UUID id) {
         ReviewEntity review = reviewRepository.findById(id).orElseThrow(() -> new RuntimeException("não encontrado!"));
-        return new ReviewResponseDTO(review.getTituloReview(), review.getConteudoReview(), review.getNota(), review.getRawgGameId());
+        String nomeJogo = gameService.navegarJogoPeloId(review.getRawgGameId());
+        return new ReviewRequestDTO(review.getTituloReview(), review.getConteudoReview(), nomeJogo ,review.getNota());
     }
 
     public void deleteReview(UUID id) {
-        if (!reviewRepository.existsById(id)) {
-            throw new RuntimeException("review não encontrada com ID: " + id);
+        if (reviewRepository.existsById(id)) {
+            reviewRepository.deleteById(id);
         }
-
-        reviewRepository.deleteById(id);
+        throw new RuntimeException("review com id: " + id + "não encontrada!");
     }
 
-    public ReviewResponseDTO updateReview(UUID id, ReviewResponseDTO reviewAtualizada) {
+    public ReviewRequestDTO updateReview(UUID id, ReviewRequestDTO reviewAtualizada) {
         ReviewEntity review = reviewRepository.findById(id).orElseThrow(()-> new RuntimeException("review não encontrada!"));
 
         if (reviewAtualizada.tituloReview() != null) {
@@ -69,15 +69,14 @@ public class ReviewService {
         }
 
         ReviewEntity updatedReview = reviewRepository.save(review);
-
-        return new ReviewResponseDTO(updatedReview.getTituloReview(), updatedReview.getConteudoReview(), updatedReview.getNota(), updatedReview.getRawgGameId());
+        String nomeJogo = gameService.navegarJogoPeloId(updatedReview.getRawgGameId());
+        return new ReviewRequestDTO(updatedReview.getTituloReview(), updatedReview.getConteudoReview(), nomeJogo ,updatedReview.getNota());
 
     }
 
-    public List<ReviewResponseDTO> getAllReviews() {
+    public List<ReviewRequestDTO> getAllReviews() {
         List<ReviewEntity> reviews = reviewRepository.findAll();
-
-        return reviews.stream().map(r -> new ReviewResponseDTO(r.getTituloReview(), r.getConteudoReview(), r.getNota(), r.getRawgGameId())).toList();
+        return reviews.stream().map(r -> new ReviewRequestDTO(r.getTituloReview(), r.getConteudoReview(), gameService.navegarJogoPeloId(r.getRawgGameId()) ,r.getNota())).toList();
     }
 
 

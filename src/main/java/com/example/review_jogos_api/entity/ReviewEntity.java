@@ -35,7 +35,7 @@ public class ReviewEntity {
     private Integer nota;
 
     @Column(name = "rawg_game_id", nullable = false)
-    private Long rawgGameId;
+    private String rawgGameId;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
