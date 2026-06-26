@@ -10,8 +10,6 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.client.RestClient;
-
 @Configuration
 public class WebClientConfiguration {
 
@@ -21,8 +19,10 @@ public class WebClientConfiguration {
     @Value("${rawg.api.url}")
     private String url;
 
+
     @Bean
     public WebClient rawgWebClient() {
+
         return WebClient.builder()
                 .baseUrl(url)
                 .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
