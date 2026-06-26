@@ -8,6 +8,7 @@ import com.example.review_jogos_api.repository.ReviewRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,7 +24,7 @@ public class ReviewService {
 
     }
 
-    public ReviewResponseDTO createReview(ReviewRequestDTO review, String id) {
+    public ReviewRequestDTO createReview(ReviewRequestDTO review, String id) {
 
         ReviewEntity novaReview = new ReviewEntity();
         novaReview.setTituloReview(review.tituloReview());
@@ -32,11 +33,10 @@ public class ReviewService {
         novaReview.setCreatedAt(LocalDateTime.now());
         novaReview.setRawgGameId(id);
 
-
-
         ReviewEntity savedReview = reviewRepository.save(novaReview);
+        String nomeDoJogoFormat = gameService.navegarJogoPeloId(savedReview.getRawgGameId());
 
-        return new ReviewResponseDTO(savedReview.getTituloReview(), savedReview.getConteudoReview(), savedReview.getNota(), savedReview.getRawgGameId());
+        return new ReviewRequestDTO(savedReview.getTituloReview(), savedReview.getConteudoReview(), nomeDoJogoFormat ,savedReview.getNota());
 
     }
 
@@ -76,7 +76,8 @@ public class ReviewService {
 
     public List<ReviewRequestDTO> getAllReviews() {
         List<ReviewEntity> reviews = reviewRepository.findAll();
-        return reviews.stream().map(r -> new ReviewRequestDTO(r.getTituloReview(), r.getConteudoReview(), gameService.navegarJogoPeloId(r.getRawgGameId()) ,r.getNota())).toList();
+
+        return reviews.stream().map(r -> new ReviewRequestDTO(r.getTituloReview(), r.getConteudoReview(),gameService.navegarJogoPeloId(r.getRawgGameId()) ,r.getNota())).toList();
     }
 
 

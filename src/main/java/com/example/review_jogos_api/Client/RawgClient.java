@@ -1,5 +1,6 @@
 package com.example.review_jogos_api.Client;
 
+import com.example.review_jogos_api.config.WebClientConfiguration;
 import com.example.review_jogos_api.dto.GameResultDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,15 +16,17 @@ public class RawgClient {
     private final WebClient webClient;
     private final RestClient restClient;
 
-    @Value("${rawg.api.url}")
     private String url;
 
-    @Value("${rawg.api.key}")
     private String apiKey;
 
-    public RawgClient(WebClient rawgClient, RestClient.Builder builder) {
+    public RawgClient(WebClient rawgClient, RestClient restClient,@Value("${rawg.api.url}") String url
+    ,@Value("${rawg.api.key}") String apiKey) {
         this.webClient = rawgClient;
-        this.restClient = builder.baseUrl(url).build();
+        this.restClient = restClient;
+
+        this.apiKey = apiKey;
+        this.url = url;
 
     }
     public Mono<GameResultDTO> buscarJogos(String termo, int pagina, int tamanho) {
@@ -41,19 +44,25 @@ public class RawgClient {
     }
 
     public String buscarJogos(String nome) {
+
+        System.out.println("Entrou no método");
+        System.out.println("API Key: [" + apiKey + "]");
+
         Map<String, Object> response = restClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/games")
-                        .queryParam("Key", apiKey)
+                .uri(uriBuilder -> uriBuilder
+                        .path("/games")
+                        .queryParam("key", apiKey)
+                        .queryParam("search", nome)
                         .queryParam("page_size", 1)
                         .build())
                 .retrieve()
                 .body(Map.class);
-
         if (response != null && response.containsKey("results")) {
             List<Map<String, Object>> results = (List<Map<String, Object>>) response.get("results");
 
             if (results != null && !results.isEmpty()) {
-                return (String) results.get(0).get("id");
+                Integer id = (Integer) results.getFirst().get("id");
+                return id.toString();
             }
         }
 
@@ -70,11 +79,11 @@ public class RawgClient {
                 .bodyToMono(Map.class)
                 .block();
 
-        if (response != null || response.containsKey("results")) {
+        if (response != null && response.containsKey("results")) {
             List<Map<String, Object> > results = (List<Map<String, Object>>) response.get("results");
 
-            if (!results.isEmpty()) {
-                Map<String, Object> primeiroJogo = results.get(0);
+            if (results != null && !results.isEmpty()) {
+                Map<String, Object> primeiroJogo = results.getFirst();
                 return (String) primeiroJogo.get("name");
             }
         }
@@ -94,9 +103,10 @@ public class RawgClient {
         if (response != null || response.containsKey("results")) {
             List<Map<String, Object>> results = (List<Map<String, Object>>) response.get("results");
 
-            if (!results.isEmpty()) {
-                Map<String, Object> primeiroJogo = results.get(0);
-                return (String) primeiroJogo.get("name");
+            if (results != null  && !results.isEmpty()) {
+                Map<String, Object> primeiroJogo = results.getFirst();
+                String nome = (String) primeiroJogo.get("name");
+                return nome;
             }
         }
 
