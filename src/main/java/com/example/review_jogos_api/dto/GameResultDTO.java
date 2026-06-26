@@ -7,6 +7,6 @@ import java.util.List;
 
 @Cacheable(value = "jogos_rawg")
 @RateLimiter(name = "rawgApiLimiter")
-public record GameResultDTO(Long id, String name, String released,
+public record GameResultDTO(String id, String name, String released,
                             double rating, String backgroundImage, List<PlataformaDTO> plataformas) {
 }
