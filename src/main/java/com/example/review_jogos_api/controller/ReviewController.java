@@ -1,7 +1,6 @@
 package com.example.review_jogos_api.controller;
 
 import com.example.review_jogos_api.dto.ReviewRequestDTO;
-import com.example.review_jogos_api.dto.ReviewResponseDTO;
 import com.example.review_jogos_api.service.GameService;
 import com.example.review_jogos_api.service.ReviewService;
 import org.springframework.http.HttpStatus;
@@ -23,10 +22,9 @@ public class ReviewController {
     }
 
     @PostMapping("/reviews")
-    public ResponseEntity<ReviewResponseDTO> createReviews(@RequestBody ReviewRequestDTO reviews) {
-        String idJogo = gameService.navegarJogosPorNome(reviews.nomeJogo());
-
-        ReviewResponseDTO saved = reviewService.createReview(reviews, idJogo );
+    public ResponseEntity<ReviewRequestDTO> createReviews(@RequestBody ReviewRequestDTO reviews) {
+        String gameSaved = gameService.navegarJogosPorNome(reviews.nomeJogo());
+        ReviewRequestDTO saved = reviewService.createReview(reviews , gameSaved);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
