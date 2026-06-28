@@ -7,6 +7,7 @@ import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import reactor.core.publisher.Mono;
 
 
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -42,11 +43,11 @@ public class GameService {
         return rawgClient.pegarNome(nomeDeBusca);
     }
 
-    public String navegarJogoPeloId(String id) {
-        if(id.equals("")) {
+    public String navegarJogoPeloId(String ids) {
+        if(ids.equals("")) {
             throw new RuntimeException("o id do jogo não pode ser um campo vazio!");
         }
 
-        return rawgClient.getGameById(id);
+        return rawgClient.getGameById(ids);
     }
 }
