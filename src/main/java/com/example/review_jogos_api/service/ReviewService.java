@@ -1,16 +1,15 @@
 package com.example.review_jogos_api.service;
 
-import com.example.review_jogos_api.Client.RawgClient;
 import com.example.review_jogos_api.dto.ReviewRequestDTO;
-import com.example.review_jogos_api.dto.ReviewResponseDTO;
 import com.example.review_jogos_api.entity.ReviewEntity;
 import com.example.review_jogos_api.repository.ReviewRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Service
 public class ReviewService {
@@ -77,7 +76,19 @@ public class ReviewService {
     public List<ReviewRequestDTO> getAllReviews() {
         List<ReviewEntity> reviews = reviewRepository.findAll();
 
-        return reviews.stream().map(r -> new ReviewRequestDTO(r.getTituloReview(), r.getConteudoReview(),gameService.navegarJogoPeloId(r.getRawgGameId()) ,r.getNota())).toList();
+        AtomicReference<String> nomeJogo = new AtomicReference<>("");
+        List<ReviewRequestDTO> review = reviews.stream().map(r -> CompletableFuture.supplyAsync(() -> {
+            nomeJogo.set(gameService.navegarJogoPeloId(r.getRawgGameId()));
+
+            return new ReviewRequestDTO(r.getTituloReview(), r.getConteudoReview(), nomeJogo.get(),r.getNota());
+        }))
+                .map(CompletableFuture::join)
+                .collect(Collectors.toList());
+
+        return review;
+
+
+
     }
 
 
