@@ -10,6 +10,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 public class RawgClient {
@@ -81,6 +82,7 @@ public class RawgClient {
 
         if (response != null && response.containsKey("results")) {
             List<Map<String, Object> > results = (List<Map<String, Object>>) response.get("results");
+            System.out.println(results);
 
             if (results != null && !results.isEmpty()) {
                 Map<String, Object> primeiroJogo = results.getFirst();
@@ -99,18 +101,18 @@ public class RawgClient {
                         .build(id))
                 .retrieve()
                 .body(Map.class);
+        String nomeJogo = "";
 
-        if (response != null || response.containsKey("results")) {
-            List<Map<String, Object>> results = (List<Map<String, Object>>) response.get("results");
+        if (response != null || response.containsKey("name")) {
+            Object results =  response.get("name");
 
-            if (results != null  && !results.isEmpty()) {
-                Map<String, Object> primeiroJogo = results.getFirst();
-                String nome = (String) primeiroJogo.get("name");
-                return nome;
+            if (results == null ) {
+                throw new RuntimeException("nao encontrou resultado para o jogo com este id");
             }
+            String primeiroJogo = results.toString();
+            return (String) primeiroJogo;
         }
 
-        return "";
-
+        return nomeJogo;
     }
 }
