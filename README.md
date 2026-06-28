@@ -12,4 +12,5 @@ eu basicamente comecei esse projeto com a decisão de aprender algo novo ou quas
 
 ## mudanças
 
-agora a partir da rota post é possivel fazer uma busca na api externa da qual estou utilizando para obter o id e salvar apenas o id no banco de dados. correcao futura: o processo inverso da rota post a partir do id retornar o nome do jogo no encima do qual foi feito a review.
+agora a partir da rota post é possivel fazer uma busca na api externa da qual estou utilizando para obter o id e salvar apenas o id no banco de dados. correções feitas: o processo inverso da rota post a partir do id retornar o nome do jogo no encima do qual foi feito a review.
+próximo passo do progeto, permitir o acesso as reviews a partir do id ofuscado pelo dto. o que tera de fazer e uma ajuste entre a camada de dto e de entity para retornar a review mas ainda sim não retornar o seu id.
